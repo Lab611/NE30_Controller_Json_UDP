@@ -1,9 +1,21 @@
 #ifndef NE30_CONTROL_HPP
 #define NE30_CONTROL_HPP
 
-// 20230212 zx edit
-#include <essential.hpp>
 #include <NE30_pos.hpp>
+#include <iostream>
+#include <fstream>
+#include <thread>
+#include <signal.h>
+#include <string.h>
+#include <string>
+#include <chrono>
+#include <cmath>
+#include <Eigen/Dense>
+#include <vector>
+#include <ctime>
+#include <winsock.h>
+#include <windows.h>
+#include "actuatorcontroller.h"
 
 using namespace std;
 
@@ -53,13 +65,18 @@ public:
     int setInit() const;
 
     // 返回机械臂当前位姿
-    NE30Pos getPos() const;
+    NE30Pos get_init_pos() const;
 
     // 失效所有执行器
     void setDisable() const;
 
+    // void printAngle();
+    Eigen::Matrix4d getPosMatrix() const;
+
+    NE30Pos getPos() const;
+
 private:
-    NE30Pos Pos_;
+    NE30Pos init_pos;
 
     //定义全局变量
     //初始化执行器
@@ -80,17 +97,12 @@ private:
     Eigen::Matrix3d tH, tH_end;
     // 运动到一个合适的初始位置
     vector<double> true_start_encoders = {9, 2, 0, 0, 0, 0};
-    vector<double> true_mid_encoders = {9, 3, -3, -3, -5, 0};
-    vector<double> true_end_encoders = {9, 3, -6, -6, -10, 0};
-
-    // void printAngle();
-    Eigen::Matrix4d getPosMatrix() const;
+    vector<double> true_mid_encoders = {6, 2, -6, -6, -3, 0};
+    vector<double> true_end_encoders = {9, 3, -11, -11, -5, 0};
 
     void paramFeedback(const ActuatorController::UnifiedID &uID, uint8_t paramType, double paramValue);
 
-    void savePos(double pos_x, double pos_y, double pos_z, double pitch, double yaw, double roll);
-
-    void savePos(double pos_x, double pos_y, double pos_z, double w, double x, double y, double z);
+    void set_init_pos(double pos_x, double pos_y, double pos_z, double pitch, double yaw, double roll);
 
     void setEncoders(double e1, double e2, double e3, double e4, double e5, double e6) const;
 
@@ -138,9 +150,11 @@ NE30Control::NE30Control() {
 
     //获取当前末端位置
     Eigen::Matrix4d T06 = getPosMatrix();
-    //double pos_x = T06(0, 3), pos_y = T06(1, 3), pos_z = T06(2, 3);
+    double pos_x = T06(0, 3), pos_y = T06(1, 3), pos_z = T06(2, 3);
     cout << "CURRENT POSITION \n";
     cout << T06 << endl << endl;
+    // cout << "x y z\n";
+    // cout << pos_x << " " << pos_y << " " << pos_z << endl;
 
     //pController->addParaRequestCallback(paramFeedback);
     //system("pause");
@@ -174,19 +188,20 @@ int NE30Control::setPos(const double pos_x,
 
     //cout << "EULER ANGLE 2 RM\n" << tH << "\n";
     if (setPos(pos_x, pos_y, pos_z, tH, force_moving) == 0) {
-        savePos(pos_x, pos_y, pos_z, pitch, yaw, roll);
+        set_init_pos(pos_x, pos_y, pos_z, pitch, yaw, roll);
         return 0;
     }
     return FAILED_TO_MOVE;
 }
 
-// 欧拉角结构体
+// 欧拉角结构体 trans_vec 单位是 mm 欧拉角单位是 弧度
 int NE30Control::setPos(const NE30Pos &Pos, const BOOL force_moving) {
     return setPos(Pos.x, Pos.y, Pos.z, Pos.pitch, Pos.yaw, Pos.roll, force_moving);
 }
 
 // rotation matrix
 // 运动实现都依靠这里
+// trans_vec 单位是 mm
 int NE30Control::setPos(const double pos_x,
                         const double pos_y,
                         const double pos_z,
@@ -363,7 +378,7 @@ int NE30Control::setPos(const double pos_x,
                       theta[num[min_idx]][5], theta[num[min_idx]][6]);
         } else {
             char tmp;
-            cout << "即将大幅移动机械臂，是否强制运动. Y/[n]\n";
+            cout << "Move greatly, if continue? Y/[n]\n";
             cin >> tmp;
             if (tmp == 'y' || tmp == 'Y') {
                 setAngles(theta[num[min_idx]][1], theta[num[min_idx]][2], theta[num[min_idx]][3],
@@ -406,17 +421,17 @@ int NE30Control::setInit() const {
     return 1;
 }
 
-NE30Pos NE30Control::getPos() const {
-    return Pos_;
+NE30Pos NE30Control::get_init_pos() const {
+    return init_pos;
 }
 
-void NE30Control::savePos(double pos_x, double pos_y, double pos_z, double pitch, double yaw, double roll) {
-    Pos_.x = pos_x;
-    Pos_.y = pos_y;
-    Pos_.z = pos_z;
-    Pos_.pitch = pitch;
-    Pos_.yaw = yaw;
-    Pos_.roll = roll;
+void NE30Control::set_init_pos(double pos_x, double pos_y, double pos_z, double pitch, double yaw, double roll) {
+    init_pos.x = pos_x;
+    init_pos.y = pos_y;
+    init_pos.z = pos_z;
+    init_pos.pitch = pitch;
+    init_pos.yaw = yaw;
+    init_pos.roll = roll;
 }
 
 Eigen::Matrix4d NE30Control::getPosMatrix() const {
@@ -463,6 +478,24 @@ Eigen::Matrix4d NE30Control::getPosMatrix() const {
     return T06;
 }
 
+NE30Pos NE30Control::getPos() const {
+    Eigen::Matrix4d pos_mat = getPosMatrix();
+    // 提取旋转矩阵
+    Eigen::Matrix3d rot_mat = pos_mat.block<3, 3>(0, 0);
+
+    // 提取平移向量
+    Eigen::Vector3d trans_vec = pos_mat.block<3, 1>(0, 3);
+
+    // 计算欧拉角 (需要指定旋转顺序)
+    Eigen::Vector3d eulerAngles = rot_mat.eulerAngles(2, 1, 0); // ZYX 顺序
+    // 输出欧拉角
+    // std::cout << "Euler angles (Yaw, Pitch, Roll): " << std::endl;
+    // std::cout << "Yaw (Z axis): " << eulerAngles[0] * 180 / M_PI << " degrees" << std::endl;
+    // std::cout << "Pitch (Y axis): " << eulerAngles[1] * 180 / M_PI << " degrees" << std::endl;
+    // std::cout << "Roll (X axis): " << eulerAngles[2] * 180 / M_PI << " degrees" << std::endl;
+
+    return NE30Pos(1000.0 * trans_vec[0], 1000.0 * trans_vec[1], 1000.0 * trans_vec[2], eulerAngles[1], eulerAngles[0], eulerAngles[2]);
+}
 
 void NE30Control::setAngles(const double r1,
                             const double r2,
@@ -520,13 +553,14 @@ std::vector<double> NE30Control::getAngles() const {
     double theta5 = -10 * pController->getPosition(uIDArray.at(4).actuatorID, true, uIDArray.at(4).ipAddress);
     double theta6 = -10 * pController->getPosition(uIDArray.at(5).actuatorID, true, uIDArray.at(5).ipAddress);
     vector<double> tmp = {theta1, theta2, theta3, theta4, theta5, theta6};
-    cout << "\n当前电机内部角度为：" << endl;
+    cout << "\nCurrent motor angles" << endl;
     cout << -theta1 << "   " << -theta2 << "   " << theta3 << "   " << -theta4 << "   " << -theta5 << "   " << -theta6
             << endl << endl;
     return tmp;
 }
 
-void NE30Control::paramFeedback(const ActuatorController::UnifiedID &uID, const uint8_t paramType, const double paramValue) {
+void NE30Control::paramFeedback(const ActuatorController::UnifiedID &uID, const uint8_t paramType,
+                                const double paramValue) {
     switch (paramType) {
         case Actuator::ACTUAL_CURRENT:
             //cout << "Actuator " << (int)uID.actuatorID << " current is " << paramValue << "A" << endl;

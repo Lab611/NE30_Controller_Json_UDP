@@ -1,11 +1,12 @@
 #include "json_udp_server.hpp"
 #include "json_msg_builder.hpp"
 #include "ne30_control.hpp"
+#include <conio.h> // For kbhit and getch
 #include <iostream>
 #include <fstream>
 #include <thread>
 
-// #define CONTROL_NE30
+#define CONTROL_NE30
 
 using namespace std;
 
@@ -25,9 +26,23 @@ int main() {
 
 #ifdef CONTROL_NE30
     NE30Control Ne30;
+    cout << "initing ..." << endl;
+    for (int i = 0; i < 100; i++) {
+        cout << i  << "% \r";
+        Sleep(100);
+    }
+    auto ne30_pos = Ne30.getPos();
+    printf("x: %5.2f y: %5.2f z: %5.2f \n", ne30_pos.x, ne30_pos.y, ne30_pos.z);
+    printf("pitch: %8.4f yaw: %8.4f roll: %8.4f\n", ne30_pos.pitch, ne30_pos.yaw, ne30_pos.roll);
+    std::cout << "INIT DONE\n";
 #endif
 
     while (true) {
+        if (_kbhit()) {
+            if ('q' == _getch()) {
+                break;
+            }
+        }
         try {
             recv_msg = server.get_json();
             server.clean_json();
@@ -44,8 +59,32 @@ int main() {
             this_thread::sleep_for(chrono::milliseconds(10));
             continue;
         }
-
+        auto ne30_last_pos = ne30_pos;
         std::cout << "recv_msg JSON: " << recv_msg.dump(4) << std::endl;
+        switch ((JSON_CMD_TYPE) recv_msg["cmd"]) {
+            case CMD_MOVE:
+                cout << "CMD_MOVE" << std::endl;
+                ne30_pos.x += (double) recv_msg["data"][0];
+                ne30_pos.y += (double) recv_msg["data"][1];
+                ne30_pos.z += (double) recv_msg["data"][2];
+            // ne30_pos.roll = vec.at(3);
+            // ne30_pos.pitch = vec.at(4);
+            // ne30_pos.yaw = vec.at(5);
+                break;
+            case CMD_RESET:
+                break;
+            default:
+                break;
+        }
+
+        printf("x: %5.2f y: %5.2f z: %5.2f \n", ne30_pos.x, ne30_pos.y, ne30_pos.z);
+        printf("pitch: %8.4f yaw: %8.4f roll: %8.4f\n", ne30_pos.pitch, ne30_pos.yaw, ne30_pos.roll);
+
+        if (Ne30.setPos(ne30_pos, 0) == FAILED_TO_MOVE) {
+            ne30_pos = ne30_last_pos;
+            cout << "Failed to move\n";
+        }
+
         this_thread::sleep_for(chrono::milliseconds(10));
     }
 

@@ -1,7 +1,17 @@
 #ifndef NE30_POS_HPP
 #define NE30_POS_HPP
-#include "essential.hpp"
+#include <fstream>
+#include <signal.h>
+#include <cmath>
+#include <Eigen/Dense>
+#include <vector>
 
+//#pragma comment(lib, "ws2_32.lib")
+#define FAILED_TO_MOVE -1
+#define NPI_PI(x) ((x)<(-EIGEN_PI))?((x)+2*EIGEN_PI):(((x)>EIGEN_PI)?(x-(2*EIGEN_PI)):(x))
+#define N2PI_2PI(x) ((x)<(-2*EIGEN_PI))?((x)+2*EIGEN_PI):(((x)>2*EIGEN_PI)?(x-(2*EIGEN_PI)):(x))
+
+using namespace std;
 /// <summary>
 /// pitch 对应 y
 /// yaw 对应 z
