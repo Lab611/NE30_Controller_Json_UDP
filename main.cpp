@@ -25,10 +25,11 @@ int main() {
     nlohmann::json recv_msg;
 
 #ifdef CONTROL_NE30
+    // 初始化机械臂 要等待一段时间机械臂复位
     NE30Control Ne30;
     cout << "initing ..." << endl;
     for (int i = 0; i < 100; i++) {
-        cout << i  << "% \r";
+        cout << i  << "% \n";
         Sleep(100);
     }
     auto ne30_pos = Ne30.getPos();
@@ -80,6 +81,7 @@ int main() {
         printf("x: %5.2f y: %5.2f z: %5.2f \n", ne30_pos.x, ne30_pos.y, ne30_pos.z);
         printf("pitch: %8.4f yaw: %8.4f roll: %8.4f\n", ne30_pos.pitch, ne30_pos.yaw, ne30_pos.roll);
 
+        // 控制机械臂
         if (Ne30.setPos(ne30_pos, 0) == FAILED_TO_MOVE) {
             ne30_pos = ne30_last_pos;
             cout << "Failed to move\n";
