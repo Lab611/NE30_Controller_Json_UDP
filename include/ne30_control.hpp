@@ -65,7 +65,7 @@ public:
     int setInit() const;
 
     // 返回机械臂当前位姿
-    NE30Pos get_init_pos() const;
+    NE30Pos getInitPos() const;
 
     // 失效所有执行器
     void setDisable() const;
@@ -74,6 +74,11 @@ public:
     Eigen::Matrix4d getPosMatrix() const;
 
     NE30Pos getPos() const;
+
+    void returnInitPosition() const {
+        setEncoders(true_end_encoders);
+        Sleep(500);
+    }
 
 private:
     NE30Pos init_pos;
@@ -96,24 +101,39 @@ private:
     double current[6]{}, velocity[6]{}, position[6]{};
     Eigen::Matrix3d tH, tH_end;
     // 运动到一个合适的初始位置
-    vector<double> true_start_encoders = {9, 2, 0, 0, 0, 0};
-    vector<double> true_mid_encoders = {6, 2, -6, -6, -3, 0};
-    vector<double> true_end_encoders = {9, 3, -11, -11, -5, 0};
+    vector<double> true_start_encoders = {
+        8, // 1
+        9, // 2
+        0, // 3
+        7, // 4
+        -9, // 5
+        0 // 6
+    };
+    vector<double> true_mid_encoders = {
+        9, // 1
+        12, // 2
+        -6, // 3
+        2, // 4
+        -9, // 5
+        0 // 6
+    };
+    vector<double> true_end_encoders = {
+        9, // 1
+        14, // 2
+        -12, // 3
+        -2, // 4
+        -9, // 5
+        0 // 6
+    };
 
     void paramFeedback(const ActuatorController::UnifiedID &uID, uint8_t paramType, double paramValue);
 
-    void set_init_pos(double pos_x, double pos_y, double pos_z, double pitch, double yaw, double roll);
+    void setInitPos(double pos_x, double pos_y, double pos_z, double pitch, double yaw, double roll);
 
     void setEncoders(double e1, double e2, double e3, double e4, double e5, double e6) const;
 
     void setEncoders(const std::vector<double> &encoders) const;
 };
-
-
-//
-// Created by Lab611-Y7KP on 24-11-13.
-//
-#include "ne30_control.hpp"
 
 
 NE30Control::NE30Control() {
@@ -188,7 +208,7 @@ int NE30Control::setPos(const double pos_x,
 
     //cout << "EULER ANGLE 2 RM\n" << tH << "\n";
     if (setPos(pos_x, pos_y, pos_z, tH, force_moving) == 0) {
-        set_init_pos(pos_x, pos_y, pos_z, pitch, yaw, roll);
+        setInitPos(pos_x, pos_y, pos_z, pitch, yaw, roll);
         return 0;
     }
     return FAILED_TO_MOVE;
@@ -411,21 +431,15 @@ int NE30Control::setPos(const double pos_x,
 }
 
 int NE30Control::setInit() const {
-    setEncoders(19.3726, // id = 0
-                8.035, // id = 1
-                5.94, // id = 2
-                4.82, // id = 3
-                2.659, // id = 4
-                12.16 // id = 5
-    );
+    setEncoders(true_end_encoders);
     return 1;
 }
 
-NE30Pos NE30Control::get_init_pos() const {
+NE30Pos NE30Control::getInitPos() const {
     return init_pos;
 }
 
-void NE30Control::set_init_pos(double pos_x, double pos_y, double pos_z, double pitch, double yaw, double roll) {
+void NE30Control::setInitPos(double pos_x, double pos_y, double pos_z, double pitch, double yaw, double roll) {
     init_pos.x = pos_x;
     init_pos.y = pos_y;
     init_pos.z = pos_z;
@@ -494,8 +508,10 @@ NE30Pos NE30Control::getPos() const {
     // std::cout << "Pitch (Y axis): " << eulerAngles[1] * 180 / M_PI << " degrees" << std::endl;
     // std::cout << "Roll (X axis): " << eulerAngles[2] * 180 / M_PI << " degrees" << std::endl;
 
-    return NE30Pos(1000.0 * trans_vec[0], 1000.0 * trans_vec[1], 1000.0 * trans_vec[2], eulerAngles[1], eulerAngles[0], eulerAngles[2]);
+    return NE30Pos(1000.0 * trans_vec[0], 1000.0 * trans_vec[1], 1000.0 * trans_vec[2], eulerAngles[1], eulerAngles[0],
+                   eulerAngles[2]);
 }
+
 
 void NE30Control::setAngles(const double r1,
                             const double r2,

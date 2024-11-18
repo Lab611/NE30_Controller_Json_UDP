@@ -28,11 +28,13 @@ int main() {
     // 初始化机械臂 要等待一段时间机械臂复位
     NE30Control Ne30;
     cout << "initing ..." << endl;
-    for (int i = 0; i < 100; i++) {
-        cout << i  << "% \n";
+    for (int i = 0; i < 30; i++) {
+        cout << i << "% \n";
         Sleep(100);
     }
     auto ne30_pos = Ne30.getPos();
+    auto ne30_pos_init = ne30_pos;
+    auto ne30_pos_RESET = ne30_pos;
     printf("x: %5.2f y: %5.2f z: %5.2f \n", ne30_pos.x, ne30_pos.y, ne30_pos.z);
     printf("pitch: %8.4f yaw: %8.4f roll: %8.4f\n", ne30_pos.pitch, ne30_pos.yaw, ne30_pos.roll);
     std::cout << "INIT DONE\n";
@@ -72,7 +74,15 @@ int main() {
             // ne30_pos.pitch = vec.at(4);
             // ne30_pos.yaw = vec.at(5);
                 break;
+            case CMD_MOVE_ABS:
+                cout << "CMD_MOVE_ABS" << std::endl;
+                ne30_pos.x = ne30_pos_init.x + (double) recv_msg["data"][0];
+                ne30_pos.y = ne30_pos_init.y + (double) recv_msg["data"][1];
+                ne30_pos.z = ne30_pos_init.z + (double) recv_msg["data"][2];
+                break;
             case CMD_RESET:
+                Ne30.returnInitPosition();
+                ne30_pos = ne30_pos_RESET;
                 break;
             default:
                 break;
