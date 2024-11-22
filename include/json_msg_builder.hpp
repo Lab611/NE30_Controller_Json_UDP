@@ -15,12 +15,14 @@ typedef enum {
     DEV_NE30 = 102,
 } JSON_DEVICE_TYPE;
 
+// 不同命令位
 typedef enum {
     CMD_UNKNOWN = -1,
     CMD_MOVE = 0,
     CMD_MOVE_ABS = 1,
-    CMD_RESET = 2,
-    CMD_QUIT = 3,
+    CMD_SET_ABS = 2,
+    CMD_RESET = 10,
+    CMD_QUIT = 20,
 } JSON_CMD_TYPE;
 
 inline nlohmann::json build_json_from_pos_and_rot(JSON_DEVICE_TYPE device,

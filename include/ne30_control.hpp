@@ -100,30 +100,33 @@ private:
     double theta[8 + 1][6 + 1]{}; //八组解，每组解六个角，第0个不用
     double current[6]{}, velocity[6]{}, position[6]{};
     Eigen::Matrix3d tH, tH_end;
-    // 运动到一个合适的初始位置
+    // 运动到一个合适的初始位置 复位位置
+    // 关机位置
     vector<double> true_start_encoders = {
-        8, // 1
-        9, // 2
+        8.74, // 1
+        9.4, // 2
         0, // 3
-        7, // 4
-        -9, // 5
-        0 // 6
+        8.6, // 4
+        -5.75, // 5
+        -1.23 // 6
     };
+    // 中间位置
     vector<double> true_mid_encoders = {
-        9, // 1
-        12, // 2
-        -6, // 3
-        2, // 4
-        -9, // 5
-        0 // 6
+        8.74, // 1
+        9.4, // 2
+        -4, // 3
+        8.6, // 4
+        -5.75, // 5
+        -1.23 // 6
     };
+    // 开机初始化完成位置
     vector<double> true_end_encoders = {
-        9, // 1
-        14, // 2
-        -12, // 3
-        -2, // 4
-        -9, // 5
-        0 // 6
+        6.74, // 1
+        9.3, // 2
+        -8.367859, // 3
+        1.334778, // 4
+        -5.752, // 5
+        -1.2365 // 6
     };
 
     void paramFeedback(const ActuatorController::UnifiedID &uID, uint8_t paramType, double paramValue);
@@ -206,7 +209,7 @@ int NE30Control::setPos(const double pos_x,
     tH(1, 2) = cos(roll) * sin(pitch) * sin(yaw) - cos(yaw) * sin(roll);
     tH(2, 2) = cos(roll) * cos(pitch);
 
-    //cout << "EULER ANGLE 2 RM\n" << tH << "\n";
+    cout << "EULER ANGLE 2 RM\n" << tH << "\n";
     if (setPos(pos_x, pos_y, pos_z, tH, force_moving) == 0) {
         setInitPos(pos_x, pos_y, pos_z, pitch, yaw, roll);
         return 0;

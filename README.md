@@ -4,6 +4,11 @@
 
 msvc 可以通过下载 vs 安装 也可以直接下载对应版本
 
+Clion 的工具链 生成器需要如图所示设置
+
+![img.png](imgs/clion.png)
+
+
 # 文件建构
 
 ## 3rdparty

@@ -70,19 +70,27 @@ int main() {
                 ne30_pos.x += (double) recv_msg["data"][0];
                 ne30_pos.y += (double) recv_msg["data"][1];
                 ne30_pos.z += (double) recv_msg["data"][2];
-            // ne30_pos.roll = vec.at(3);
-            // ne30_pos.pitch = vec.at(4);
-            // ne30_pos.yaw = vec.at(5);
+
+                // ne30_pos.roll = (double) recv_msg["data"][5];
+                // ne30_pos.pitch = (double) recv_msg["data"][3];
+                // ne30_pos.yaw = (double) recv_msg["data"][4];
                 break;
             case CMD_MOVE_ABS:
                 cout << "CMD_MOVE_ABS" << std::endl;
                 ne30_pos.x = ne30_pos_init.x + (double) recv_msg["data"][0];
                 ne30_pos.y = ne30_pos_init.y + (double) recv_msg["data"][1];
                 ne30_pos.z = ne30_pos_init.z + (double) recv_msg["data"][2];
+                ne30_pos.roll = (double) recv_msg["data"][5];
+                ne30_pos.pitch = (double) recv_msg["data"][4];
+                ne30_pos.yaw = (double) recv_msg["data"][3];
                 break;
             case CMD_RESET:
                 Ne30.returnInitPosition();
                 ne30_pos = ne30_pos_RESET;
+                break;
+            case CMD_SET_ABS:
+                cout << "ABS" <<endl;
+                ne30_pos_init = Ne30.getPos();
                 break;
             default:
                 break;
