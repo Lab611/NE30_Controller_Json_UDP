@@ -2,8 +2,8 @@
 // Created by Lab611-Y7KP on 24-11-14.
 //
 
-#ifndef MATH_UTILS_H
-#define MATH_UTILS_H
+#ifndef MATH_UTILS_HPP
+#define MATH_UTILS_HPP
 #include <vector>
 #include <Eigen/Dense>
 #include <iostream>
@@ -32,4 +32,4 @@ inline std::vector<double> get_vec_from_trans_matrix(Eigen::Matrix4d mat){
 }
 
 
-#endif //MATH_UTILS_H
+#endif //MATH_UTILS_HPP
