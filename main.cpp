@@ -1,17 +1,14 @@
 #include "json_udp_server.hpp"
 #include "json_msg_builder.hpp"
 #include "ne30_control.hpp"
+#include "json_utils.hpp"
 #include <conio.h> // For kbhit and getch
 #include <iostream>
-#include <fstream>
 #include <thread>
 
 #define CONTROL_NE30
 
 using namespace std;
-
-
-nlohmann::json get_json_from_file(const string &file_path);
 
 
 int main() {
@@ -71,9 +68,9 @@ int main() {
                 ne30_pos.y += (double) recv_msg["data"][1];
                 ne30_pos.z += (double) recv_msg["data"][2];
 
-                // ne30_pos.roll = (double) recv_msg["data"][5];
-                // ne30_pos.pitch = (double) recv_msg["data"][3];
-                // ne30_pos.yaw = (double) recv_msg["data"][4];
+            // ne30_pos.roll = (double) recv_msg["data"][5];
+            // ne30_pos.pitch = (double) recv_msg["data"][3];
+            // ne30_pos.yaw = (double) recv_msg["data"][4];
                 break;
             case CMD_MOVE_ABS:
                 cout << "CMD_MOVE_ABS" << std::endl;
@@ -89,7 +86,7 @@ int main() {
                 ne30_pos = ne30_pos_RESET;
                 break;
             case CMD_SET_ABS:
-                cout << "ABS" <<endl;
+                cout << "ABS" << endl;
                 ne30_pos_init = Ne30.getPos();
                 break;
             default:
@@ -109,24 +106,4 @@ int main() {
     }
 
     return 0;
-}
-
-
-nlohmann::json get_json_from_file(const string &file_path) {
-    // 打开文件
-    std::ifstream file(file_path);
-    if (!file.is_open()) {
-        std::cerr << "Could not open the file: " << file_path << std::endl;
-        return 1; // 返回错误码
-    }
-
-    // 解析 JSON 文件
-    json j;
-    try {
-        file >> j; // 使用 operator>> 直接读取文件内容到 json 对象
-    } catch (const nlohmann::json::parse_error &e) {
-        std::cerr << "Parse error: " << e.what() << std::endl;
-        return {};
-    }
-    return j;
 }
