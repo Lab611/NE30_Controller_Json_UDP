@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "string": "cpp"
+        "*.tex": "latex",
+        "string": "cpp",
+        "dense": "cpp"
     }
 }

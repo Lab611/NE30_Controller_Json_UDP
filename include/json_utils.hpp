@@ -7,9 +7,10 @@
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <iostream>
+#include <string>
+#include <Eigen/Dense>
 
-
-inline nlohmann::json get_json_from_file(const string &file_path) {
+inline nlohmann::json get_json_from_file(const std::string &file_path) {
     // 打开文件
     std::ifstream file(file_path);
     if (!file.is_open()) {
@@ -29,9 +30,8 @@ inline nlohmann::json get_json_from_file(const string &file_path) {
 }
 
 
-inline Eigen::Matrix4d get_trans_matrix_from_json(json msg) {
+inline Eigen::Matrix4d get_trans_matrix_from_json(nlohmann::json msg) {
     // 从 nlohmann::json 反序列化为 Eigen 矩阵
-
     Eigen::Matrix4d mat = Eigen::Matrix4d::Identity();
     for (int i = 0; i < mat.rows(); ++i) {
         for (int j_ = 0; j_ < mat.cols(); ++j_) {
