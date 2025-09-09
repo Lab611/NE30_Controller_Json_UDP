@@ -1,0 +1,6 @@
+[submodule "3rdparty/innfos"]
+	path = 3rdparty/innfos
+	url = https://github.com/mintasca/innfos-cpp-sdk.git
+[submodule "3rdparty/nlohmann"]
+	path = 3rdparty/nlohmann
+	url = https://github.com/nlohmann/json.git
