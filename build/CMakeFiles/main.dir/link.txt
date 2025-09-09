@@ -1,1 +1,1 @@
-/usr/bin/c++ CMakeFiles/main.dir/main.cpp.o -o main 
+/usr/bin/c++ -g CMakeFiles/main.dir/main.cpp.o -o main   -L/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/innfos/sdk/lib/linux_x86_64/debug  -Wl,-rpath,/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/innfos/sdk/lib/linux_x86_64/debug -lactuatorController 
