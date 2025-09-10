@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/include -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/eigen-3.4.0 -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/innfos/sdk/include -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/nlohmann/single_include
+CXX_INCLUDES = -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/include -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/eigen -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/innfos/sdk/include -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/nlohmann/single_include
 
 CXX_FLAGS = -g -std=gnu++17
 

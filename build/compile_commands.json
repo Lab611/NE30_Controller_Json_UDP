@@ -1,7 +1,7 @@
 [
 {
   "directory": "/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/build",
-  "command": "/usr/bin/c++  -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/include -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/eigen-3.4.0 -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/innfos/sdk/include -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/nlohmann/single_include -g -std=gnu++17 -o CMakeFiles/main.dir/main.cpp.o -c /home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/main.cpp",
+  "command": "/usr/bin/c++  -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/include -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/eigen -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/innfos/sdk/include -I/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/nlohmann/single_include -g -std=gnu++17 -o CMakeFiles/main.dir/main.cpp.o -c /home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/main.cpp",
   "file": "/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/main.cpp",
   "output": "CMakeFiles/main.dir/main.cpp.o"
 }

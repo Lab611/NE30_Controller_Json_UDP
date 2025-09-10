@@ -25,7 +25,7 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 27,
+				"line" : 26,
 				"parent" : 0
 			},
 			{
@@ -57,7 +57,7 @@
 				},
 				{
 					"backtrace" : 2,
-					"path" : "/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/eigen-3.4.0"
+					"path" : "/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/eigen"
 				},
 				{
 					"backtrace" : 2,
@@ -97,15 +97,15 @@
 				"role" : "flags"
 			},
 			{
-				"fragment" : "-L/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/innfos/sdk/lib/linux_x86_64/debug",
+				"fragment" : "-L/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/innfos/sdk/lib/linux_x86_64",
 				"role" : "libraryPath"
 			},
 			{
-				"fragment" : "-Wl,-rpath,/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/innfos/sdk/lib/linux_x86_64/debug",
+				"fragment" : "-Wl,-rpath,/home/ruoyu/NE30_Linux/Code/NE30_Controller_Json_UDP/3rdparty/innfos/sdk/lib/linux_x86_64",
 				"role" : "libraries"
 			},
 			{
-				"fragment" : "-lactuatorController",
+				"fragment" : "-lActuatorController",
 				"role" : "libraries"
 			}
 		],

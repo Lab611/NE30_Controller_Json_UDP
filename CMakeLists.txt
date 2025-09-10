@@ -10,7 +10,7 @@ project(NE30_controller)
 
 set(EXECUTABLE_NAME main)
 
-set(Eigen3_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/3rdparty/eigen-3.4.0")
+set(Eigen3_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/3rdparty/eigen")
 set(INNFOS_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/3rdparty/innfos/sdk/include")
 set(INNFOS_LIB_DIR "${PROJECT_SOURCE_DIR}/3rdparty/innfos/sdk/lib/linux_x86_64")
 set(JSON_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/3rdparty/nlohmann/single_include")
@@ -23,7 +23,6 @@ INCLUDE_DIRECTORIES(
         ${JSON_INCLUDE_DIR}
 )
 
-
 ADD_EXECUTABLE(${EXECUTABLE_NAME} main.cpp)
 
 if(WIN32)
@@ -34,8 +33,8 @@ endif()
 if(UNIX AND NOT APPLE)  
     find_package(Threads REQUIRED)
     target_link_libraries(${EXECUTABLE_NAME} Threads::Threads)
-
 endif()
+
 # 根据平台设置库文件扩展名和命名约定
 if(WIN32)
     set(LIB_EXT ".lib")
@@ -47,10 +46,13 @@ else()
     set(DEBUG_SUFFIX "")   # Linux 通常没有调试后缀
 endif()
 
+# 修正库文件名 - 注意大小写
+set(INNFOS_LIB_NAME "ActuatorController")  # 注意大写'A'和'C'
+
 # 使用生成器表达式处理不同配置
+# 由于库文件直接放在 linux_x86_64 目录下，没有 debug/release 子目录
 target_link_libraries(${EXECUTABLE_NAME}
-    $<$<CONFIG:Release>:${INNFOS_LIB_DIR}/release/${CMAKE_STATIC_LIBRARY_PREFIX}actuatorController${DEBUG_SUFFIX}${LIB_EXT}>
-    $<$<CONFIG:Debug>:${INNFOS_LIB_DIR}/debug/${CMAKE_STATIC_LIBRARY_PREFIX}actuatorController${DEBUG_SUFFIX}${LIB_EXT}>
+    ${INNFOS_LIB_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${INNFOS_LIB_NAME}${DEBUG_SUFFIX}${SHARED_LIB_EXT}
 )
 
 # 使用生成器表达式获取可执行文件的完整路径
@@ -63,16 +65,9 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E echo "Build type: $<CONFIG>"
     COMMAND ${CMAKE_COMMAND} -E
     copy_if_different
-    "$<$<CONFIG:Release>:${INNFOS_LIB_DIR}/release/${CMAKE_SHARED_LIBRARY_PREFIX}actuatorController${DEBUG_SUFFIX}${SHARED_LIB_EXT}>"
-    "$<$<CONFIG:Debug>:${INNFOS_LIB_DIR}/debug/${CMAKE_SHARED_LIBRARY_PREFIX}actuatorController${DEBUG_SUFFIX}${SHARED_LIB_EXT}>"
-    "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>"
+    ${INNFOS_LIB_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${INNFOS_LIB_NAME}${DEBUG_SUFFIX}${SHARED_LIB_EXT}
+    $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>
 )
 
 # 添加调试信息
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    message(STATUS "RELEASE mode")
-    message(STATUS "Library: ${INNFOS_LIB_DIR}/release/${CMAKE_STATIC_LIBRARY_PREFIX}actuatorController${DEBUG_SUFFIX}${LIB_EXT}")
-else()
-    message(STATUS "DEBUG mode")
-    message(STATUS "Library: ${INNFOS_LIB_DIR}/debug/${CMAKE_STATIC_LIBRARY_PREFIX}actuatorController${DEBUG_SUFFIX}${LIB_EXT}")
-endif()
+message(STATUS "Library: ${INNFOS_LIB_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${INNFOS_LIB_NAME}${DEBUG_SUFFIX}${SHARED_LIB_EXT}")
